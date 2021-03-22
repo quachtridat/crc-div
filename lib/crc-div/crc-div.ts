@@ -29,7 +29,7 @@ export class CrcDiv/* <BitType extends CrcDivStepBitDataType = BooleanWrapper> *
       );
     if (genBits[0].value === false)
       throw new InvalidArgumentException(
-        `The generator bits must not start with ${0}`,
+        `The leading generator bit must not be ${0}`,
         nameof({ genBits })
       );
 

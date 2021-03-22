@@ -55,33 +55,41 @@ export const crcDivComponent: React.FC = () => {
       setNoNextStep(false);
     } catch (e: any) {
       if (e instanceof Error) {
-        setResult(`Error: ${e.message}`);
+        setDesc(`Error: ${e.message}`);
       } else {
-        setResult('An error has occurred!');
+        setDesc('An error has occurred!');
       }
     }
   };
 
   const advanceState = () => {
     if (crcDiv) {
-      const state = crcDiv.stateMachine.next();
-      if (state.done === true) {
-        setIsAuto(false);
-        if (!noNextStep) {
-          setNumStep(numStep + 1);
-          setNoNextStep(true);
-          if (state.value) setResult(state.value.map((x) => x.value ? '1' : '0').join(''));
-        }
-      } else {
-        setNumStep(numStep + 1);
-        if (state.value) {
-          if (state.value instanceof Descriptor) {
-            if (typeof state.value.description === 'string') {
-              setDesc(state.value.description);
-            }
-          } else {
-            setCalcData(state.value);
+      try {
+        const state = crcDiv.stateMachine.next();
+        if (state.done === true) {
+          setIsAuto(false);
+          if (!noNextStep) {
+            setNumStep(numStep + 1);
+            setNoNextStep(true);
+            if (state.value) setResult(state.value.map((x) => x.value ? '1' : '0').join(''));
           }
+        } else {
+          setNumStep(numStep + 1);
+          if (state.value) {
+            if (state.value instanceof Descriptor) {
+              if (typeof state.value.description === 'string') {
+                setDesc(state.value.description);
+              }
+            } else {
+              setCalcData(state.value);
+            }
+          }
+        }
+      } catch (e: any) {
+        if (e instanceof Error) {
+          setDesc(`Error: ${e.message}`);
+        } else {
+          setDesc('An error has occurred!');
         }
       }
     }
