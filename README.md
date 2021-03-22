@@ -25,6 +25,7 @@ I started this project to reconsolidate my knowledge after learning about CRC at
 ### Built With
 
 * [Next.js](http://nextjs.org/)
+* [TypeScript](https://www.typescriptlang.org/)
 * [TailwindCSS](https://tailwindcss.com/)
 
 <!-- GETTING STARTED -->
@@ -61,8 +62,6 @@ To get a local copy up and running follow these simple steps.
    npm run dev
    ```
 
-
-
 <!-- USAGE EXAMPLES -->
 ## Usage
 
@@ -98,8 +97,6 @@ This is a personal project, however I am happy that you checked this out. Contri
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
-
 
 <!-- CONTACT -->
 ## Contact

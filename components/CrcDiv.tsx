@@ -33,11 +33,13 @@ export const crcDivComponent: React.FC = () => {
   const [isAuto, setIsAuto] = useState<boolean>(false);
 
   const onChangeDataStr: ChangeEventHandler<HTMLInputElement> = (e: ChangeEvent<HTMLInputElement>) => {
-    if (dataStr.length < 128) setDataStr((e.target as HTMLInputElement).value);
+    const s = (e.target as HTMLInputElement).value;
+    if (s.length <= 128) setDataStr(s);
   };
 
   const onChangeGenStr: ChangeEventHandler<HTMLInputElement> = (e: ChangeEvent<HTMLInputElement>) => {
-    if (genStr.length < 128) setGenStr((e.target as HTMLInputElement).value);
+    const s = (e.target as HTMLInputElement).value;
+    if (s.length < 128) setGenStr(s);
   };
 
   const onClickLoad = () => {
@@ -91,6 +93,9 @@ export const crcDivComponent: React.FC = () => {
         } else {
           setDesc('An error has occurred!');
         }
+        setNoNextStep(true);
+        setNumStep(0);
+        setIsAuto(false);
       }
     }
   };
@@ -123,7 +128,7 @@ export const crcDivComponent: React.FC = () => {
       <form action="#" method="POST" className="min-w-max">
         <div className="overflow-hidden rounded-md shadow">
           <div className="p-6 space-y-6">
-            <p className="mx-auto text-lg text-center">Cyclic Redundancy Check</p>
+            <p className="mx-auto text-2xl text-center">Cyclic Redundancy Check</p>
             <fieldset>
               <legend className="text-base font-medium text-gray-900 sr-only">Input</legend>
               <div className="mt-2 space-y-4">
@@ -204,7 +209,7 @@ export const crcDivComponent: React.FC = () => {
           </div>
         </div>
       </form>
-      <div className="flex flex-1 flex-col rounded-md shadow max-h-[75vh] pt-6 content-start">
+      <div className="flex flex-1 flex-col rounded-md shadow min-w-[32rem] max-h-[75%] pt-6 content-start">
         <div className="flex flex-col items-start px-6 font-mono">
           {
             crcDiv ?
@@ -225,7 +230,7 @@ export const crcDivComponent: React.FC = () => {
           }
           <span className="w-full bg-black border-none h-0.5"></span>
         </div>
-        <div className="flex flex-col items-start flex-1 px-6 overflow-auto font-mono">
+        <div className="flex flex-col items-start flex-1 px-6 pb-8 overflow-auto font-mono">
           {
             calcData.map((arr, idx) => {
               return (
@@ -240,10 +245,8 @@ export const crcDivComponent: React.FC = () => {
             })
           }
         </div>
-        <div className="flex flex-col w-full bg-gray-50">
-          <div className="p-6">
-            <p className="block font-mono text-center">{desc}</p>
-          </div>
+        <div className="flex flex-col justify-around flex-shrink-0 w-full p-6 bg-gray-50 h-36">
+          <p className="block font-mono text-center">{desc}</p>
         </div>
       </div>
     </div>

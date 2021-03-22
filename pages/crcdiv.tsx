@@ -5,11 +5,21 @@ import CrcDiv from '@/components/CrcDiv';
 
 const CrcDivPage: NextPage = () => {  
   return (
-    <Layout title="CRC">
-      <div className="max-w-screen-lg px-8 py-4 mx-auto">
-        {/* <h1 className="w-full mx-auto mb-4 text-4xl text-center">Cyclic Redundancy Check</h1> */}
+    <Layout title="CRC" className="flex flex-col flex-1 w-screen h-screen">
+      <main className="flex-1 w-full px-8 py-4 mx-auto">
         <CrcDiv />
-      </div>
+      </main>
+      <footer className="flex flex-col flex-grow flex-shrink-0 max-h-20">
+        <hr />
+        <div className="flex flex-col justify-around flex-grow px-4 py-2">
+          <p className="text-center">
+            Written by Dat Quach.
+          </p>
+          <p className="text-center">
+            Source code available at <a href="https://github.com/quachtridat/crc-div" className="font-black">GitHub</a>.
+          </p>
+        </div>
+      </footer>
     </Layout>
   );
 };
