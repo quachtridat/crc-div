@@ -10,7 +10,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Cyclic Redundancy Check - Step-by-Step Division][product-screenshot]](https://github.com/quachtridat/crc-div)
+[![Cyclic Redundancy Check - Step-by-Step Division][product-screenshot]](https://crc-div-quachtridat.vercel.app)
+
+_Live demo at [here](https://crc-div-quachtridat.vercel.app)._
 
 This is a simple web app to simulate the process of modulo-2 division using exclusive-OR (XOR) operations on binary numbers used in Cyclic Redundancy Check (CRC).
 
