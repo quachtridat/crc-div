@@ -74,13 +74,14 @@ Steps:
 
 1. Input data bits (max. 128 bits).
 2. Input generator bits (max. 128 bits).
-3. Click `Load` let the app load input data and generate states.
-4. To operate manually, click `Next Step` to progress to the next state.
-5. To let the app run automatically:
+3. Optionally enable any modificators (e.g., `Fast-forward indivisible steps`).
+4. Click `Load` let the app load input data and generate states.
+5. To operate manually, click `Next Step` to progress to the next state.
+6. To let the app run automatically:
    1. Input the auto interval time length. This number (in milliseconds) indicates the time amount the app waits before progressing to the next state (if there is).
    2. Press `Auto` to start the automation.
-   3. Press `Pause` at anytime to pause. Pressing `Next Step` also pauses the automation, except it also advance 1 extra step.
-6. The process stops when the result is out. At this time, there is no further states, so all auto and manual functions, except for the `Load` button, are disabled.
+   3. Press `Pause` at anytime to pause. Pressing `Next Step` also pauses the automation, except it also advances 1 extra step.
+7. The process stops when the result is out. At this time, there is no further states, so all auto and manual functions, except for the `Load` button, are disabled.
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -104,11 +105,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 Dat Quach - [LinkedIn](https://www.linkedin.com/in/datquach) - dattriquach1702@gmail.com
 
 Project Link: [https://github.com/quachtridat/crc-div](https://github.com/quachtridat/crc-div)
-
-<!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-
-* [Choose an Open Source License](https://choosealicense.com)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
