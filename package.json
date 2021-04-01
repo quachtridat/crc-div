@@ -2,7 +2,7 @@
   "name": "crc-div",
   "author": "quachtridat",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "debug": "Set-ExecutionPolicy Unrestricted -Scope CurrentUser; $env:NODE_OPTIONS='--inspect'; next dev",
     "dev": "next dev",

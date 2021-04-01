@@ -16,7 +16,7 @@ export type CrcDivStepNextType = never;
 export type CrcDivStepGeneratorType<BitType = CrcDivStepBitDataType> = Generator<CrcDivStepYieldType<BitType>, CrcDivStepReturnType<BitType>, CrcDivStepNextType>;
 
 export class CrcDiv/* <BitType extends CrcDivStepBitDataType = BooleanWrapper> */ {
-  public static *generatorFor<BitType extends CrcDivStepBitDataType = CrcDivStepBitDataType, DataBitArrayType extends Array<BitType> = Array<BitType>, GenBitArrayType extends Array<BitType> = Array<BitType>>(dataBits: DataBitArrayType, genBits: GenBitArrayType, bitCtor?: new (boolVal: boolean) => BitType): CrcDivStepGeneratorType<BitType> {
+  public static *generatorFor<BitType extends CrcDivStepBitDataType = CrcDivStepBitDataType, DataBitArrayType extends Array<BitType> = Array<BitType>, GenBitArrayType extends Array<BitType> = Array<BitType>>(dataBits: DataBitArrayType, genBits: GenBitArrayType, bitCtor?: new (boolVal: boolean) => BitType, skipYieldForIndivisibles = false): CrcDivStepGeneratorType<BitType> {
     if (dataBits.length < 1)
       throw new InvalidArgumentException(
         'The data bits cannot be empty!',
@@ -96,6 +96,7 @@ export class CrcDiv/* <BitType extends CrcDivStepBitDataType = BooleanWrapper> *
         remBits = calcDataArr[calcDataArr.length - 1];
 
         const allZeros = remBits[offset].value !== genBits[0].value;
+        const skipCalcYields = allZeros && skipYieldForIndivisibles;
 
         //const newGenBitArrOp: NewArrayOperation<Array<BitType>> = remBits[offset].value !== genBits[0].value ? new NewArrayOperation<Array<BitType>>((new Array<BitType>(offset + genBits.length)).map(() => bitCtor ? new bitCtor(false) : {value: false} as BitType)) : new NewArrayOperation<Array<BitType>>((new Array<BitType>(offset)).map(() => bitCtor ? new bitCtor(false) : {value: false} as BitType).concat(genBits.slice()));
         const newGenBitArrOp: NewArrayOperation<Array<BitType>> = allZeros ? new NewArrayOperation<Array<BitType>>(rangeFn(0, offset + genBits.length, 1, (): BitType => bitCtor ? new bitCtor(false) : {value : false} as BitType)) : new NewArrayOperation<Array<BitType>>(rangeFn(0, offset, 1, (): BitType => bitCtor ? new bitCtor(false) : {value : false} as BitType).concat(...rangeFn(0, genBits.length, 1, (_, idx) => bitCtor ? new bitCtor(genBits[idx].value) : {value: genBits[idx].value} as BitType)));
@@ -112,8 +113,14 @@ export class CrcDiv/* <BitType extends CrcDivStepBitDataType = BooleanWrapper> *
         assert.strictEqual(remBits.length, newGenBits.length);
 
         calcDataArr.push(newGenBits);
-        const descNewGenBits = new Descriptor<string>(allZeros ? 'Preserve remainder bits as the leading remainder bit is either zero or differs from the leading generator bit.' : 'Copy the generator bits.');
+
+        const descNewGenBits = new Descriptor<string>(allZeros ? 'Preserve remainder bits as the leading remainder bit is zero or differs from the leading generator bit.' : 'Copy the generator bits.');
         yield descNewGenBits;
+
+        if (skipCalcYields) {
+          const descSkipCalcYields = new Descriptor<string>('Fast-forwarding calculations as the remainder bits are preserved because the leading remainder bit is zero or differs from the leading generator bit.');
+          yield descSkipCalcYields;
+        }
 
         newRemBitArrOp = new NewArrayOperation<Array<BitType>>(remBits.slice(0, offset));
         const newRemBits = newRemBitArrOp.execute();
@@ -142,7 +149,7 @@ export class CrcDiv/* <BitType extends CrcDivStepBitDataType = BooleanWrapper> *
             }
           }
           const descSetActiveBits = new Descriptor<string>(`Mark remainder bit #${remBits.length - currentIdx - 1} and generator bit #${newGenBits.length - currentIdx - 1} as active`);
-          yield descSetActiveBits;
+          if (!skipCalcYields) yield descSetActiveBits;
 
           const calcXorRemBitGenBit = new XorBooleanWrapperOperation({value1: bit1, value2: bit2});
           const xorVal = calcXorRemBitGenBit.execute();
@@ -156,7 +163,7 @@ export class CrcDiv/* <BitType extends CrcDivStepBitDataType = BooleanWrapper> *
           const pushRemBitOp = new AppendArrayInplaceOperation<BitType, Array<BitType>>({container: newRemBits, items: [newRemBit]});
           pushRemBitOp.execute();
           const descNewRemBit = new Descriptor<string>(`Exclusive-OR (XOR) operation between the remainder bit and the generator bit produces a new bit of value ${xorVal.value ? 1 : 0} as ${bit1.value ? 1 : 0} ⊕ ${bit2.value ? 1 : 0} = ${xorVal.value ? 1 : 0}.`);
-          yield descNewRemBit;
+          if (!skipCalcYields) yield descNewRemBit;
           if (currentIdx <= offset && newRemBit instanceof VisualBit) {
             const setHiddenSettingsOp = new SetVisualSettingsOperation<VisualBitSettings, VisualBit>({obj: newRemBit as VisualBit, settings: {hidden: true}}, true);
             setHiddenSettingsOp.execute();
@@ -171,6 +178,11 @@ export class CrcDiv/* <BitType extends CrcDivStepBitDataType = BooleanWrapper> *
               setActiveSettingsOp.execute();
             }
           }
+        }
+
+        if (skipCalcYields) {
+          const descSkipCalcYields = new Descriptor<string>('Fast-forwarded calculations as the remainder bits are preserved because the leading remainder bit is zero or differs from the leading generator bit.');
+          yield descSkipCalcYields;
         }
 
         if (dataBitIdx < endDataBitIdx) {
