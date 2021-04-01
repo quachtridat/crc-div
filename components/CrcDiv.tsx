@@ -29,6 +29,8 @@ export const crcDivComponent: React.FC = () => {
   const [numStep, setNumStep] = useState<number>(0);
   const [desc, setDesc] = useState<string>(INTRO_DESC);
 
+  const [chkFastForwardIndivisibleSteps, setChkFastForwardIndivisibleSteps] = useState<boolean>(false);
+
   const [autoIntervalTimeLength, setAutoIntervalTimeLength] = useState<number>(DEFAULT_AUTO_INTERVAL);
   const [isAuto, setIsAuto] = useState<boolean>(false);
 
@@ -46,7 +48,7 @@ export const crcDivComponent: React.FC = () => {
     try {
       const dataBits = dataStr.split('').map((x) => new VisualBit(x !== '0'));
       const genBits = genStr.split('').map((x) => new VisualBit(x !== '0'));
-      const machine = CrcDiv.generatorFor(dataBits, genBits, VisualBit);
+      const machine = CrcDiv.generatorFor(dataBits, genBits, VisualBit, chkFastForwardIndivisibleSteps);
       setIsAuto(false);
       setDesc('');
       setResult('');
@@ -109,6 +111,10 @@ export const crcDivComponent: React.FC = () => {
     advanceState();
   };
 
+  const onChangeChkFastForwardIndivisibleSteps: ChangeEventHandler<HTMLInputElement> = (e: ChangeEvent<HTMLInputElement>) => {
+    setChkFastForwardIndivisibleSteps((e.target as HTMLInputElement).checked);
+  }
+
   const onChangeAutoInterval: ChangeEventHandler<HTMLInputElement> = (e: ChangeEvent<HTMLInputElement>) => {
     const s = (e.target as HTMLInputElement).value;
     const x = Number.parseInt(s);
@@ -125,7 +131,7 @@ export const crcDivComponent: React.FC = () => {
 
   return (
     <div className="flex flex-1 w-full gap-x-4 gap-y-4">
-      <form action="#" method="POST" className="min-w-max">
+      <form action="#" method="POST" className="max-w-sm">
         <div className="overflow-hidden rounded-md shadow">
           <div className="p-6 space-y-6">
             <p className="mx-auto text-2xl text-center">Cyclic Redundancy Check</p>
@@ -177,21 +183,32 @@ export const crcDivComponent: React.FC = () => {
             </fieldset>
           </div>
           <div className="flex flex-col w-full bg-gray-50">
+            <div className="flex flex-col px-6 py-3 gap-y-2">
+              <div className="flex items-start">
+                <div className="flex items-center h-5">
+                  <input name="chkFastForwardIndivisibleSteps" type="checkbox" checked={chkFastForwardIndivisibleSteps} onChange={onChangeChkFastForwardIndivisibleSteps} className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label htmlFor="chkFastForwardIndivisibleSteps" className="font-medium text-gray-700">Fast-forward indivisible steps</label>
+                  <p className="text-gray-500">Fast-forward calculations for steps where remainder bits are not divisible by generator bits.</p>
+                </div>
+              </div>
+            </div>
             <div className="grid grid-cols-2 grid-rows-1 px-6 py-3">
               <div className="flex items-center flex-1 gap-x-2">
                 <span>Step</span><span className="px-4 py-2 font-bold text-white bg-black rounded-md">{numStep}</span>
               </div>
               <div className="flex justify-end flex-1 gap-x-2">
-                <button type="button" onClick={onClickLoad} className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-500 disabled:cursor-not-allowed">
+                <button type="button" onClick={onClickLoad} className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-500 disabled:cursor-not-allowed">
                   Load
                 </button>
-                <button type="button" onClick={onClickNextStep} disabled={noNextStep} className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-500 disabled:cursor-not-allowed">
+                <button type="button" onClick={onClickNextStep} disabled={noNextStep} className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-500 disabled:cursor-not-allowed">
                   Next Step
                 </button>
               </div>
             </div>
             <div className="flex flex-1 px-6 py-3 gap-x-2">
-              <div className="relative w-full rounded-md shadow-sm">
+              <div className="relative w-full rounded-md shadow-sm min-w-max">
                 <input type="number" min={MIN_AUTO_INTERVAL} max={MAX_AUTO_INTERVAL} value={autoIntervalTimeLength} onChange={onChangeAutoInterval} disabled={noNextStep} className="block w-full pr-20 text-sm border-gray-300 rounded-md focus:ring-gray-500 focus:border-gray-500" placeholder="Auto Interval" />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <span className="text-sm text-gray-500">
@@ -234,10 +251,10 @@ export const crcDivComponent: React.FC = () => {
           {
             calcData.map((arr, idx) => {
               return (
-                <span key={idx} className={`${(idx & 1) === 1 ? 'border-b border-black' : ''}`}>
+                <span key={idx}>
                   {
                     arr.map((x, idx2) => (
-                      <VisualBitView key={idx2} visualBit={x} className={`${x.settings?.active ? 'text-red-500' : ''} ${x.settings?.hidden ? 'invisible' : ''}`} />
+                      <VisualBitView key={idx2} visualBit={x} className={`${x.settings?.active ? 'text-red-500' : ''} ${x.settings?.hidden ? 'invisible' : ''} ${x.settings?.hidden? '' : (idx & 1) === 1 ? 'border-b border-black' : ''}`} />
                     ))
                   }
                 </span>
